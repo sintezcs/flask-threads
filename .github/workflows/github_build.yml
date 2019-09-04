@@ -1,4 +1,4 @@
-name: Python package
+name: GitHub Build
 
 on: [push]
 
