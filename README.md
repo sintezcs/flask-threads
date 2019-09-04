@@ -49,5 +49,23 @@ def do_some_user_work_in_another_thread():
 #### Concurrent futures
 
 ```python
-# TBD
+from flask import request
+from flask import Flask
+from flaskthreads import ThreadPoolWithAppContextExecutor
+
+app = Flask('my_app')
+
+
+@app.route('/user')
+def get_user():
+    g.user_id = request.headers.get('user-id')
+    with ThreadPoolWithAppContextExecutor(max_workers=2) as pool:
+        future = pool.submit(do_some_user_work_in_another_thread)
+        future.result()
+    return 'ok'
+
+
+def do_some_user_work_in_another_thread():
+    id = g.user_id
+    print(id)
 ```
