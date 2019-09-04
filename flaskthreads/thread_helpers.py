@@ -176,6 +176,8 @@ class ThreadPoolWithAppContextExecutor(_base.Executor):
 
 
 class AppContextThread(threading.Thread):
+    """Implements Thread with flask AppContext."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not has_app_context():
