@@ -1,37 +1,46 @@
-## Welcome to GitHub Pages
+## Flask-Threads
+A helper library to work with threads within Flask applications.
 
-You can use the [editor on GitHub](https://github.com/sintezcs/flask-threads/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+The main problem that you face trying to spin a background thread or running a 
+future in Flask app - is loosing the application context. The most common 
+scenario is to try to access `flask.g` object. Application context 
+is a thread local so you can not access it from another thread and Flask will 
+raise an exception if you would try to. 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+This library provides helper classes that allows you accessing the current 
+application context from another thread.
 
-### Markdown
+**Warning! Alpha-version, use at your own risk.**
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### Examples
 
-```markdown
-Syntax highlighted code block
+#### Threads
 
-# Header 1
-## Header 2
-### Header 3
+```python
+from flask import request
+from flask import Flask
+from flaskthreads import AppContextThread
 
-- Bulleted
-- List
+app = Flask('my_app')
 
-1. Numbered
-2. List
 
-**Bold** and _Italic_ and `Code` text
+@app.route('/user')
+def get_user():
+    g.user_id = request.headers.get('user-id')
+    t = AppContextThread(target=do_some_user_work_in_another_thread)
+    t.start()
+    t.join()
+    return 'ok'
 
-[Link](url) and ![Image](src)
+
+def do_some_user_work_in_another_thread():
+    id = g.user_id
+    print(id)
+
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+#### Concurrent futures
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/sintezcs/flask-threads/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+```python
+# TBD
+```
