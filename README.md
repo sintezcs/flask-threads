@@ -1,6 +1,8 @@
 ## Flask-Threads
 A helper library to work with threads within Flask applications.
 
+[![Actions Status](https://github.com/{owner}/{repo}/workflows/{workflow_name}/badge.svg)](https://github.com/{owner}/{repo}/actions)
+
 The main problem that you face trying to spin a background thread or running a 
 future in Flask app - is loosing the application context. The most common 
 scenario is to try to access `flask.g` object. Application context 
