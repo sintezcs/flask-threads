@@ -64,7 +64,8 @@ class _WorkItemWithContext(object):
             return
 
         try:
-            self.app_ctx.push()
+            app_ctx = self.app_ctx  # Capture ctx since we may set self to None
+            app_ctx.push()
             result = self.fn(*self.args, **self.kwargs)
         except BaseException as exc:
             self.future.set_exception(exc)
@@ -73,7 +74,7 @@ class _WorkItemWithContext(object):
         else:
             self.future.set_result(result)
         finally:
-            self.app_ctx.pop()
+            app_ctx.pop()
 
 
 def _worker(executor_reference, work_queue):
