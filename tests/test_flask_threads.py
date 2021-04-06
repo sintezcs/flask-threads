@@ -68,3 +68,27 @@ def test_executor_running_without_flask_context():
             future = pool.submit(lambda: mock_action.action())
             future.result()
         mock_action.action.assert_not_called()
+
+def test_executor_trasnfers_exceptions_to_calling_thread(flask_app):
+    """Test the executor trasfers raised exceptions to the calling thread."""
+
+    def raises():
+        raise RuntimeError("foo")
+
+    @flask_app.route(TEST_URL)
+    def test_handler():
+        g.test = TEST_G
+        with ThreadPoolWithAppContextExecutor(max_workers=1) as pool:
+            future1 = pool.submit(raises)
+            future2 = pool.submit(lambda: 42)
+            with pytest.raises(RuntimeError):
+                future1.result()
+
+            future2.result()
+            return jsonify(TEST_RESULT)
+
+
+    with flask_app.test_client() as client:
+        result = client.get(TEST_URL)
+
+    assert result.get_json() == TEST_RESULT
