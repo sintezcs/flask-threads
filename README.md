@@ -24,6 +24,7 @@ $ pip install Flask-Threads
 #### Threads
 
 ```python
+from flask import g
 from flask import request
 from flask import Flask
 from flaskthreads import AppContextThread
@@ -49,6 +50,7 @@ def do_some_user_work_in_another_thread():
 #### Concurrent futures
 
 ```python
+from flask import g
 from flask import request
 from flask import Flask
 from flaskthreads import ThreadPoolWithAppContextExecutor
