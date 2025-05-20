@@ -12,8 +12,18 @@ import threading
 import weakref
 import os
 
-from flask import _app_ctx_stack
 from flask import has_app_context
+
+_get_app_context = None
+try:
+    # For Flask <3.0.0
+    from flask import _app_ctx_stack
+    _get_app_context = lambda: _app_ctx_stack.top
+except ImportError:
+    # For Flask >=3.0.0
+    from flask.globals import app_ctx as app_context
+    _get_app_context = lambda: app_context._get_current_object()
+
 
 APP_CONTEXT_ERROR = 'Running outside of Flask AppContext.'
 
@@ -123,7 +133,7 @@ class ThreadPoolWithAppContextExecutor(_base.Executor):
         if not has_app_context():
             raise RuntimeError(APP_CONTEXT_ERROR)
 
-        self._app_ctx = _app_ctx_stack.top
+        self._app_ctx = _get_app_context()
         self._max_workers = max_workers
         self._work_queue = queue.Queue()
         self._threads = set()
@@ -183,7 +193,7 @@ class AppContextThread(threading.Thread):
         super().__init__(*args, **kwargs)
         if not has_app_context():
             raise RuntimeError(APP_CONTEXT_ERROR)
-        self.app_ctx = _app_ctx_stack.top
+        self.app_ctx = _get_app_context()
 
     def run(self):
         try:

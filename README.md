@@ -12,8 +12,6 @@ raise an exception if you would try to.
 This library provides helper classes that allows you accessing the current 
 application context from another thread.
 
-**Warning! Alpha-version, use at your own risk.**
-
 ### Installation
 ```bash
 $ pip install Flask-Threads

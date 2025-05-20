@@ -69,6 +69,7 @@ def test_executor_running_without_flask_context():
             future.result()
         mock_action.action.assert_not_called()
 
+
 def test_executor_trasnfers_exceptions_to_calling_thread(flask_app):
     """Test the executor trasfers raised exceptions to the calling thread."""
 
@@ -86,7 +87,6 @@ def test_executor_trasnfers_exceptions_to_calling_thread(flask_app):
 
             future2.result()
             return jsonify(TEST_RESULT)
-
 
     with flask_app.test_client() as client:
         result = client.get(TEST_URL)
